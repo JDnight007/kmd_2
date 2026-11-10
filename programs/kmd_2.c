@@ -47,8 +47,22 @@
 /* =====  main Function  ===== */
 int main(int argc, char **argv)
 {
-	/* insert magic */
+	/* ----- Variable Declaration ----- */
+	/* ... */
 
+
+
+	/* ----- <TBD> ----- */
+	/* ... */
+
+
+
+	/* ----- <TDB> ----- */
+	/* ... */
+
+
+
+	/* ----- Program Termination ----- */
 	return 0;
 }
 
