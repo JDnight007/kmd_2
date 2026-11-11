@@ -8,8 +8,25 @@
 
 
 
+
 /* =====  Defined : Constants  ===== */
 #define REGISTERS 16
+
+
+
+
+
+
+
+
+/* =====  Defined : Macros  ===== */
+#define MemoryAllocation(p,n)						\
+	do {								\
+		if(!(*(p) = malloc((n) * sizeof **(p)))) {		\
+			printf("Error : allocating memory\n");		\
+		}							\
+	} while(0)
+
 
 
 
@@ -25,22 +42,13 @@
 
 
 
-/* =====  Defined : functions  ===== */
-#define MemoryAllocation(p,n)						\
-	do {								\
-		if(!(*(p) = malloc((n) * sizeof **(p)))) {		\
-			printf("Error : allocating memory\n");		\
-		}							\
-	} while(0)
-
-
-
-
-
 
 
 /* =====  Function Declarations  ===== */
-/* ... */
+int SanityCheck_SOURCE_FILE	(char *filename);
+int SanityCheck_FLAGS		(char *flags);
+
+
 
 
 
@@ -80,5 +88,15 @@ int main(int argc, char **argv)
 
 
 
+
 /* =====  Function Definitions  ===== */
-/* ... */
+
+/* ----- Sanity Checks ----- */
+int SanityCheck_SOURCE_FILE	(char *filename)
+{
+	return 0;
+}
+int SanityCheck_FLAGS		(char **flags)
+{
+	return 0;
+}
