@@ -70,8 +70,8 @@ int main(int argc, char **argv)
 
 
 
-	/* ----- File Access ----- */
-	if(SanityCheck_SOURCE_FILE(&fp, argv[1]))	return 1;
+	/* ----- Sanity Checks ----- */
+	if(SanityCheck_SOURCE_FILE(&fp, argv[argc - 1]))	return 1;
 
 
 
