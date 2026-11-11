@@ -35,7 +35,10 @@
 
 
 /* =====  Structs & Data Types  ===== */
-/* ... */
+typedef struct Branch {
+	char *BranchName;
+	int  *OperationIndex;
+} Branch;
 
 
 
