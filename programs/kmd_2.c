@@ -11,6 +11,7 @@
 
 /* =====  Defined : Constants  ===== */
 #define REGISTERS 16
+#define FETCH_LENGTH 256
 
 
 
@@ -65,11 +66,14 @@ int main(int argc, char **argv)
 	/* ----- Variable Declaration ----- */
 	FILE *fp;
 	int *r;
+	char *line, *sp;
 
 
 
 	/* ----- Memory Allocation ----- */
-	MemoryAllocation(&r,REGISTERS);
+	MemoryAllocation(&r,	REGISTERS);
+	MemoryAllocation(&line,	FETCH_LENGTH);
+	MemoryAllocation(&sp,	FETCH_LENGTH);
 
 
 
@@ -78,8 +82,11 @@ int main(int argc, char **argv)
 
 
 
-	/* ----- <TDB> ----- */
-	/* ... */
+	/* ----- File Reading ----- */
+	while((*sp = fgets(line, 256, fp) != NULL)) {
+		printf("R15:%d\t|\t%s", r[15], line);
+		r[15]++;
+	}
 
 
 
