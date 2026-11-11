@@ -45,8 +45,8 @@
 
 
 /* =====  Function Declarations  ===== */
-int SanityCheck_SOURCE_FILE	(char *filename);
-int SanityCheck_FLAGS		(char *flags);
+int SanityCheck_SOURCE_FILE	(FILE **fp, char *filename);
+int SanityCheck_FLAGS		(char **flags);
 
 
 
@@ -60,12 +60,19 @@ int SanityCheck_FLAGS		(char *flags);
 int main(int argc, char **argv)
 {
 	/* ----- Variable Declaration ----- */
+	FILE *fp;
 	int *r;
 
 
 
 	/* ----- Memory Allocation ----- */
 	MemoryAllocation(&r,REGISTERS);
+
+
+
+	/* ----- File Access ----- */
+	if(SanityCheck_SOURCE_FILE(&fp, argv[1]))	return 1;
+
 
 
 	/* ----- <TDB> ----- */
@@ -92,8 +99,14 @@ int main(int argc, char **argv)
 /* =====  Function Definitions  ===== */
 
 /* ----- Sanity Checks ----- */
-int SanityCheck_SOURCE_FILE	(char *filename)
+int SanityCheck_SOURCE_FILE	(FILE **fp, char *filename)
 {
+	/* --- Check : Exists --- */
+	if(!(*fp = fopen(filename, "r"))) {
+		printf("Error : cannot access provided file / file does not exist.\n");
+		return 1;
+	}
+
 	return 0;
 }
 int SanityCheck_FLAGS		(char **flags)
