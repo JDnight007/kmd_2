@@ -1,6 +1,7 @@
 /* =====  Imports  ===== */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 
@@ -38,7 +39,7 @@
 /* =====  Structs & Data Types  ===== */
 typedef struct Branch {
 	char *BranchName;
-	int  *OperationIndex;
+	int  OperationIndex;
 } Branch;
 
 
@@ -67,6 +68,7 @@ int main(int argc, char **argv)
 	FILE *fp;
 	int *r;
 	char *line, *sp;
+	Branch *branches;
 
 
 
@@ -74,6 +76,7 @@ int main(int argc, char **argv)
 	MemoryAllocation(&r,	REGISTERS);
 	MemoryAllocation(&line,	FETCH_LENGTH);
 	MemoryAllocation(&sp,	FETCH_LENGTH);
+	MemoryAllocation(&branches, 1);
 
 
 
@@ -83,10 +86,30 @@ int main(int argc, char **argv)
 
 
 	/* ----- File Reading ----- */
-	while((*sp = fgets(line, 256, fp) != NULL)) {
+	while((fgets(line, 256, fp)) != NULL) {
 		printf("R15:%d\t|\t%s", r[15], line);
+
+		if(line[0] != '\t') {
+			line[strcspn(line, "\r\n")] = '\0';
+			sp = strtok(line, "\t");
+			branches[0].BranchName = sp;
+			branches[0].OperationIndex= r[15];
+		}
+
 		r[15]++;
 	}
+
+	printf("Branch[0] : Name=%s : Index=%d\n", branches[0].BranchName, branches[0].OperationIndex);
+
+
+
+	/* ----- <TDB> ----- */
+	/* ... */
+
+
+
+	/* ----- <TDB> ----- */
+	/* ... */
 
 
 
@@ -116,7 +139,7 @@ int SanityCheck_SOURCE_FILE	(FILE **fp, char *filename)
 		printf("Error : cannot access provided file / file does not exist.\n");
 		return 1;
 	}
-
+	/* --- Passed --- */
 	return 0;
 }
 int SanityCheck_FLAGS		(char **flags)
