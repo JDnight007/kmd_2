@@ -13,7 +13,7 @@
 /* =====  Function Declarations  ===== */
 
 /* --- Memory Allocation --- */
-int mem_alloc(void *p, size_t byt, int n);
+int mem_alloc(void **p, size_t byt, int n);
 
 
 
@@ -26,13 +26,24 @@ int mem_alloc(void *p, size_t byt, int n);
 int main(int argc, char **argv)
 {
 	/* --- Variable Declaration ---- */
-	int reg[16];
-	int acc;
-
+	int *acc;
 	char **instr;
 
 
 
+	/* --- Memory Allocation --- */
+	mem_alloc((void **)&acc, sizeof(int), 1);
+
+
+
+	/* --- <TBD> --- */
+	*acc = 32;
+	printf("%d\n", *acc);
+	*acc = 32;
+	printf("%d\n", *acc);
+
+
+
 	/* --- <TBD> --- */
 	/**/
 
@@ -40,6 +51,11 @@ int main(int argc, char **argv)
 
 	/* --- <TBD> --- */
 	/**/
+
+
+
+	/* --- Free Memory --- */
+	free(acc);
 
 
 
@@ -57,8 +73,13 @@ int main(int argc, char **argv)
 /* =====  Function Definitions  ===== */
 
 /* ----- Memory Allocation ----- */
-int mem_alloc(void *p, size_t byt, int n)
+int mem_alloc(void **p, size_t byt, int n)
 {
+	*p = malloc(byt * n);
+	if (*p == NULL) {
+		printf("Error : allocating memory at %p, for %d bytes.\n", *p, (int)byt * n);
+		return 1;
+	}
 	return 0;
 }
 
