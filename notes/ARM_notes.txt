@@ -1,3 +1,244 @@
-====================================================================================================
-| All notes sourced from : ARM7TDMI Data Sheet & ARM7TDMI Technical Reference Manual               |
-====================================================================================================
+==================================================================================================================
+Structring : 
+	This is how the .txt file will be structured. Such as headers being between two 114char seperators
+	Aside notes being within ```...``` with the denotation [ASIDE:TOPIC]
+	Similarly, headers of sources will be denoted [HEADER]
+
+Sources : 
+	University of Nottingham : COMP1054 ARM Instruction Set Summary
+	ARM7TDMI Data Sheet
+	ARM7TDMI Technical Reference Manual
+__________________________________________________________________________________________________________________
+
+
+
+==================================================================================================================
+|        SOURCE : University of Nottingham : COMP1054 ARM Instruction Set Summary                                |
+==================================================================================================================
+
+
+[DATA PROCESSING]
+
+-----------------------------------------------------------------
+| ADD	Rd, Rn, Op	| Rd = Rn + Op				|
+| SUB	Rd, Rn, Op	| Rd = Rn - Op				|
+| RSB	Rd, Rn, Op	| Rd = Op - Rn ("reverse subtract")	|
+-----------------------------------------------------------------
+| AND	Rd, Rn, Op	| Rd = Rn AND Op			|
+| ORR	Rd, Rn, Op	| Logical OR				|
+| EOR	Rd, Rn, Op	| Exclusive OR				|
+| BIC	Rd, Rn, Op	| Bit Clear; Rd = Rn AND NOT Op		|
+-----------------------------------------------------------------
+| MOV	Rd, Op		| Rd = Op				|
+| MVN	Rd, Op		| Rd = NOT Op				|
+-----------------------------------------------------------------
+| CMP	Rn, Op		| set status on Rn - Op			|
+| CMN	Rn, Op		| set status on Rn + Op			|
+| TST	Rn, Op		| set status on Rn AND Op		|
+| TEQ	Rn, Op		| set status on Rn EOR Op		|
+-----------------------------------------------------------------
+| MUL	Rd, Rm, Rs	| Rd = Rm * Rs				|
+| MLA	Rd, Rm, Rs, Rn	| Rd = (Rm * Rs) + Rn			|
+-----------------------------------------------------------------
+
+An "Op" in the table above can be literal (Eg. #10) or a register (Eg. R1) or a shifted register.
+If a shift (by a literal Eg. #3 or a register Eg. R6) is required it is specified as the fourth paramter Eg.
+	ADD R1, R4, R5, LSL #3		: R1 = R4 + R5 * 8
+	ADD R1, R4, R5, LDL R6		: R1 = R4 + R5 * 2^R6
+
+-------------------------------------------------------------------------------------------------------------------------
+| LSL Shift	| Logical shift left by 0 <= Shift <= 31 places, putting 0s into least significant end			|
+| LSR Shift	| Logical shift right by 0 <= Shift <= 32 places, putting 0s in most significant end			|
+| ASR Shift	| Arithmetic shift right by 0 <= Shift <= 32 places, copying the sign bit into most significant end	|
+| ROR Shift	| Circular rotate right by 0 <= Shift <= 32 places, moving bits lost from one end into the other end	|
+-------------------------------------------------------------------------------------------------------------------------
+| RRX		| One place shift right. Carry from status reg. shifts into most significant bit.			|
+|		| If status reg. ste by instruction, carry bit = least significant bit.					|
+|		| This gives a 1-bit circular rotate through the carry bit						|
+-------------------------------------------------------------------------------------------------------------------------
+
+
+[LOAD AND STORES]
+
+-------------------------------------------------------------------------------------------------
+| LDR	Rd, Address		| Loads a 32-bit word into Rd from memory location		|
+| LDRB	Rd, Address		| Loads 8-bits into Rd; top 24 bits are 0s			|
+-------------------------------------------------------------------------------------------------
+| STR	Rd, Address		| Stores Rd at memory location					|
+| STRB	Rd, Address		| Stores bottom byte of Rd at memory location			|
+-------------------------------------------------------------------------------------------------
+| LDMFD	Rd, register list	| Multiple reg. load,load from addr Rd.				|
+| STMFD Rd!, register list	| Multiple reg. store, Rd is updated after each store operation	|
+-------------------------------------------------------------------------------------------------
+
+An "Address" in the table above can be a numerical address (Eg. 100) or a named memory location (Eg. fred) or calculated from the contents of registers and literals Eg.
+
+---------------------------------------------------------
+| Operand form	| Address	| Final value of R0	|
+---------------------------------------------------------
+| [R0]		| R0		| (unchanged)		|
+---------------------------------------------------------
+| [R0, R1]	| R0 + R1	| (unchanged)		|
+| [R0, #1]	| R0 + 1	| (unchanged)		|
+---------------------------------------------------------
+| [R0, R1]!	| R0 + R1	| R0 + R1		|
+| [R0, #1]!	| R0 + 1	| R0 + 1		|
+---------------------------------------------------------
+| [R0], R1	| R0		| R0 + R1		|
+| [R0], #1	| R0		| R0 + 1		|
+---------------------------------------------------------
+
+In the example above the value copied from R1 can be modified by a shift (but R1 itself is unchanged) Eg.
+	LDR R2, [R0, R1, LSL #3]	: address = R0 + 8*R1
+The possible shifts are LSL, LSR, ASL and ROR as described within DATA PROCESSING
+
+
+
+[CONTROL TRANSFER]
+
+-----------------------------------------------------------------------------------------
+| B	Label		| Branch to label : R15 = label					|
+| BL	Function	| Branch and link : R14 = R15, R15 = start address of function	|
+-----------------------------------------------------------------------------------------
+| SWI	Number		| Software Interrupt						|
+-----------------------------------------------------------------------------------------
+
+
+[CONDITION CODES]
+
+-------------------------------------------------------------------------
+| Code	| Meaning				| Flag Condition	|
+-------------------------------------------------------------------------
+| EQ	| Equal					| Z			|
+| NE	| Not equal				| !Z			|
+-------------------------------------------------------------------------
+| GE	| Greater than or Equal (signed)	| N = V			|
+| GT	| Greater than (signed)			| (N = V) . !Z		|
+| LT	| Less than (signed)			| N != V		|
+| LE	| Less than or Equal (signed)		| (N != V) + Z		|
+-------------------------------------------------------------------------
+| HI	| Higher (unisgned)			| C . !Z		|
+| LS	| Lower or Same (unsigned)		| !C + Z		|
+| CS/HS	| Carry Set/Higher or Same (unsigned)	| C			|
+| CC/LO	| Carry Clear/Lower (unsigned)		| !C			|
+-------------------------------------------------------------------------
+| MI	| Minus (negative)			| N			|
+| PL	| Plus (positive)			| !N			|
+| VS	| Overflow Set				| V			|
+| VC	| Overflow Clear			| !V			|
+-------------------------------------------------------------------------
+| AL	| Always				| TRUE			|
+-------------------------------------------------------------------------
+
+Also, any Data Processing instruction ca be followed by an "S" Eg. ADD can become ADDS meaning that the result of the instruction is to be compared with zero. Note that "S" comes after any condition code Eg. ADDNES
+
+
+
+[ASSEMBLER SUPPLIED 'PSEUDO OPERATIONS']
+
+-----------------------------------------------------------------------------------------
+| NOP			| No operation							|
+| MOV	Rd, #-nn	| Replaced by MVN						|
+| CMP	Rn, #-nn	| Replaced by CMN						|
+-----------------------------------------------------------------------------------------
+| ADR	Rd, Label	| Rd = Label address, Replaced by ADD Rd, R15, #nn		|
+| ADRL	Rd, Label	| Rd = Label address, Used when #nn in ADR is out of range	|
+| LDR	Rd, =nnnnnnnn	| Load Constant							|
+-----------------------------------------------------------------------------------------
+
+
+[ASSEMBLER DIRECTIVES]
+
+---------------------------------------------------------------------------------
+| ENTRY			| Mark the code entry point				|
+| ORIGIN 0xAddress	| Set start address of code or data that follows	|
+| ALIGN			| Align to next 4-byte boundary				|
+| EQU			| Define a compile-time constant			|
+---------------------------------------------------------------------------------
+| DEFW	0x12345678	| Define the value of the next word(s)			|
+| DEFB	0, 2, "bytes"	| Define the value of the next byte(s)			|
+| DEFS	0x20		| Reserve the next 20 (hex) bytes of storage (32 bytes)	|
+---------------------------------------------------------------------------------
+
+DEFB, DEFW and DEFS allow data to be planted amongst the instructions in a program
+
+
+[SWI OPTIONS UNDER KOMODO]
+
+The following SWI options are supported by KoMoDo in emulator mode
+
+-------------------------------------------------------------------------------------------------
+| SWI	0	| Output the single character in R0 to the 'Features' window			|
+| SWI	1	| Read in, to R0, a single character typed at the 'Features window		|
+| SWI	2	| Halt KoMoDo									|
+| SWI	3	| Print a string, whose start address is in R0, to the 'Features window		|
+| SWI	4	| Print out, to the 'Features' window, in decimal, the integer stored in R0	|
+-------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+__________________________________________________________________________________________________________________
+
+
+
+==================================================================================================================
+|        SOURCE : ARM7TDMI Data Sheet                                                                            |
+==================================================================================================================
+
+
+[ABOUT SOURCE DOCUMENT]
+
+~~CHAPTERS~~
+
+
+
+
+
+
+
+
+__________________________________________________________________________________________________________________
+
+
+
+==================================================================================================================
+|        SOURCE : ARM7TDMI Technical Reference Manual                                                            |
+==================================================================================================================
+
+
+[ABOUT SOURCE DOCUMENT]
+
+~~CHAPTERS~~
+Chapter 1	: Introduction			: 'Introduction to the architecture'
+
+Chapter 2	: Programmer's Model		: '32-bit ARM and 16-bit Thumb instruction sets.'
+
+Chapter 3	: Memory Interface		: 'Nonsequential, sequential, internal and coprocessor register transfer memory cycles'
+
+Chapter 4	: Coprocessor Interface		: 'Implementation of specialized additional instructions for use with coprocessors and a description of the interface'
+
+Chapter 5	: Debug Interface		: 'ARM7TDMI core hardware extensions for advanced debugging to make it simpler to develop applicatio software, operating systems, and hardware'
+
+Chapter 6	: Instruction Cycle Timings	: 'Instruction cycle timings'
+
+Chapter 7	: AC and DC Parameters		: 'AC and DC parameters, timing diagrams, definitions, and operating data.'
+
+
+~~APPENDIXES~~
+Appendix A	: Signal Description		: 'ARM7TDMI core signals'
+
+Appendix B	: Debug in Depth		: 'Further Information on the debug and EmbeddedICE macrocell'
+
+
+
+
+
+
+
+
+__________________________________________________________________________________________________________________
